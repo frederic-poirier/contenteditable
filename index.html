@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Live MD</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Live Markdown Editor">
+  <link rel="preconnect" href="https://rsms.me/">
+  <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="editor">
+    <h1>Contenteditable</h1>
+    <p>L'attribut contenteditable est défini comme un attribut global HTML qui indique si le contenu d'un élément doit être modifiable par l'utilisateur directement dans le navigateur. Lorsqu'il est activé sur un élément, le navigateur adapte son interface utilisateur (widget) pour permettre l'édition, en affichant généralement un curseur (caret), en gérant la sélection de texte et en interprétant les actions d'édition de l'utilisateur.</p>
+    <h2>Valeurs de l'Attribut et Héritage</h2>
+    <p>contenteditable est un attribut énuméré, ce qui signifie qu'il accepte un ensemble spécifique de valeurs prédéfinies. Les valeurs valides sont :</p>
+    <ul>
+        <li><code>contenteditable="true"</code> <br>L'élément est éditable et prend en charge l'édition de texte riche (mise en forme). Si l'attribut est présent sans valeur explicite, il est traité comme une chaîne vide et l'élément devient éditable. Il est crucial de comprendre qu'il ne s'agit pas d'un attribut booléen ; l'omettre ne signifie pas false.</li>
+        <li><code>contenteditable="false"</code> <br>L'élément n'est pas éditable. C'est la valeur par défaut si l'élément n'hérite pas d'un état éditable.</li>
+        <li><code>contenteditable="plaintext-only"</code> <br>Le texte brut de l'élément est éditable, mais toute mise en forme de texte riche est désactivée ou supprimée lors de l'édition ou du collage.</li>
+    </ul>
+    <p>Un aspect fondamental de contenteditable est son modèle d'héritage. Si l'attribut est absent sur un élément ou si sa valeur est invalide, l'élément hérite de l'état éditable de son élément parent le plus proche. Cela permet, par exemple, de rendre un conteneur <code class="html">div</code> entier éditable, y compris tous ses éléments enfants, en ne définissant l'attribut que sur le <code class="html">div</code> parent.</p>
+    <hr>
+    <h2>L'événement beforeinput</h2>
+    <p>L'événement beforeinput utilise l'interface InputEvent, qui hérite des interfaces UIEvent et Event. L'objet event passé au gestionnaire d'événements possède plusieurs propriétés clés en lecture seule, fournissant des informations détaillées sur l'action imminente :</p>
+        <ul>
+        <li>inputType : Une chaîne de caractères (DOMString) qui identifie le type spécifique de modification tentée par l'utilisateur. C'est une propriété cruciale car elle révèle l'intention de l'utilisateur. Les valeurs possibles sont nombreuses et standardisées. 
+            <details>
+                <summary>Voir l'ensemble des valeurs.</summary>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Valeur <code>inputType</code></th>
+                            <th>Description de l'Action</th>
+                            <th>Données Associées / Changement Potentiel</th>
+                            <th>Annulable ? (via <code>event.preventDefault()</code>)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>insertText</code></td>
+                            <td>Insertion de texte standard (saisie au clavier).</td>
+                            <td>Le texte inséré (<code>event.data</code>)</td>
+                            <td class="cancellable-yes">Oui</td>
+                        </tr>
+                        <tr>
+                            <td><code>insertReplacementText</code></td>
+                            <td>Insertion de texte remplaçant une sélection (ex: glisser-déposer, complétion).</td>
+                            <td>Le nouveau texte (<code>event.data</code>), Plages affectées (<code>event.getTargetRanges()</code>)</td>
+                            <td class="cancellable-yes">Oui</td>
+                        </tr>
+                         <tr>
+                            <td><code>insertFromPaste</code></td>
+                            <td>Insertion de contenu via une opération de coller.</td>
+                            <td>Plages affectées (<code>event.getTargetRanges()</code>). Le contenu exact est souvent mieux accessible via l'API Clipboard.</td>
+                            <td class="cancellable-yes">Oui</td>
+                        </tr>
+                         <tr>
+                            <td><code>insertFromDrop</code></td>
+                            <td>Insertion de contenu via une opération de glisser-déposer.</td>
+                            <td>Plages affectées (<code>event.getTargetRanges()</code>). Les données exactes sont souvent mieux accessibles via l'API DataTransfer.</td>
+                            <td class="cancellable-yes">Oui</td>
+                        </tr>
+                        <tr>
+                            <td><code>insertTranspose</code></td>
+                            <td>Transposition de caractères (ex: Ctrl+T dans certains éditeurs).</td>
+                            <td>Plages affectées (<code>event.getTargetRanges()</code>)</td>
+                            <td class="cancellable-yes">Oui</td>
+                        </tr>
+                         <tr>
+                            <td><code>insertDictatedText</code></td>
+                            <td>Insertion de texte provenant de la dictée vocale.</td>
+                            <td>Le texte dicté (<code>event.data</code>), Plages affectées (<code>event.getTargetRanges()</code>)</td>
+                            <td class="cancellable-yes">Oui</td>
+                        </tr>
+                         <tr>
+                            <td><code>insertFromComposition</code></td>
+                            <td>Insertion du résultat final d'une composition IME (éditeur de méthode d'entrée).</td>
+                            <td>Le texte final de la composition (<code>event.data</code>), Plages affectées (<code>event.getTargetRanges()</code>)</td>
+                            <td class="cancellable-yes">Oui</td>
+                        </tr>
+            
+            
+                        <tr>
+                            <td><code>deleteContentBackward</code></td>
+                            <td>Suppression de contenu vers l'arrière (ex: touche Retour arrière / Backspace).</td>
+                             <td>Plages affectées (<code>event.getTargetRanges()</code>)</td>
+                            <td class="cancellable-yes">Oui</td>
+                        </tr>
+                        <tr>
+                            <td><code>deleteContentForward</code></td>
+                            <td>Suppression de contenu vers l'avant (ex: touche Suppr / Delete).</td>
+                             <td>Plages affectées (<code>event.getTargetRanges()</code>)</td>
+                            <td class="cancellable-yes">Oui</td>
+                        </tr>
+                        <tr>
+                            <td><code>deleteContentByRange</code></td>
+                            <td>Suppression de contenu sur une plage sélectionnée (ex: couper, supprimer une sélection).</td>
+                             <td>Plages affectées (<code>event.getTargetRanges()</code>)</td>
+                            <td class="cancellable-yes">Oui</td>
+                        </tr>
+                         <tr>
+                            <td><code>deleteHardBreak</code></td>
+                            <td>Suppression d'un saut de ligne physique (ex: suppression d'une balise &lt;br&gt; ou d'un &lt;p&gt; vide).</td>
+                             <td>Plages affectées (<code>event.getTargetRanges()</code>)</td>
+                            <td class="cancellable-yes">Oui</td>
+                        </tr>
+                         <tr>
+                            <td><code>deleteSoftBreak</code></td>
+                            <td>Suppression d'un saut de ligne "mou" (ex: suppression d'une balise &lt;br&gt; insérée par Shift+Entrée).</td>
+                             <td>Plages affectées (<code>event.getTargetRanges()</code>)</td>
+                            <td class="cancellable-yes">Oui</td>
+                        </tr>
+                         <tr>
+                            <td><code>deleteCompositionText</code></td>
+                            <td>Suppression du texte temporaire pendant une composition IME.</td>
+                             <td>Plages affectées (<code>event.getTargetRanges()</code>)</td>
+                            <td class="cancellable-yes">Oui</td>
+                        </tr>
+                         <tr>
+                            <td><code>deleteByComposition</code></td>
+                            <td>Suppression déclenchée dans le cadre d'une composition IME.</td>
+                             <td>Plages affectées (<code>event.getTargetRanges()</code>)</td>
+                            <td class="cancellable-yes">Oui</td>
+                        </tr>
+            
+                        <tr>
+                            <td><code>insertLineBreak</code></td>
+                            <td>Insertion d'un saut de ligne "mou" (ex: Shift+Entrée).</td>
+                            <td>Plages affectées (<code>event.getTargetRanges()</code>)</td>
+                            <td class="cancellable-yes">Oui</td>
+                        </tr>
+                        <tr>
+                            <td><code>insertParagraph</code></td>
+                            <td>Insertion d'un nouveau paragraphe (ex: touche Entrée).</td>
+                            <td>Plages affectées (<code>event.getTargetRanges()</code>)</td>
+                            <td class="cancellable-yes">Oui</td>
+                        </tr>
+                         <tr>
+                            <td><code>formatBold</code></td>
+                            <td>Appliquer ou retirer le style gras.</td>
+                            <td>Plages affectées (<code>event.getTargetRanges()</code>)</td>
+                            <td class="cancellable-yes">Oui</td>
+                        </tr>
+                         <tr>
+                            <td><code>formatItalic</code></td>
+                            <td>Appliquer ou retirer le style italique.</td>
+                            <td>Plages affectées (<code>event.getTargetRanges()</code>)</td>
+                            <td class="cancellable-yes">Oui</td>
+                        </tr>
+                        <tr>
+                            <td><code>formatUnderline</code></td>
+                            <td>Appliquer ou retirer le style souligné.</td>
+                            <td>Plages affectées (<code>event.getTargetRanges()</code>)</td>
+                            <td class="cancellable-yes">Oui</td>
+                        </tr>
+                         <tr>
+                            <td><code>formatStrikeThrough</code></td>
+                            <td>Appliquer ou retirer le style barré.</td>
+                            <td>Plages affectées (<code>event.getTargetRanges()</code>)</td>
+                            <td class="cancellable-yes">Oui</td>
+                        </tr>
+                         <tr>
+                            <td><code>formatSuperscript</code></td>
+                            <td>Appliquer ou retirer le style exposant.</td>
+                            <td>Plages affectées (<code>event.getTargetRanges()</code>)</td>
+                            <td class="cancellable-yes">Oui</td>
+                        </tr>
+                         <tr>
+                            <td><code>formatSubscript</code></td>
+                            <td>Appliquer ou retirer le style indice.</td>
+                            <td>Plages affectées (<code>event.getTargetRanges()</code>)</td>
+                            <td class="cancellable-yes">Oui</td>
+                        </tr>
+                        <tr>
+                            <td><code>formatCode</code></td>
+                            <td>Appliquer ou retirer le style code.</td>
+                            <td>Plages affectées (<code>event.getTargetRanges()</code>)</td>
+                            <td class="cancellable-yes">Oui</td>
+                        </tr>
+                         <tr>
+                            <td><code>formatFontColor</code></td>
+                            <td>Changer la couleur de la police.</td>
+                            <td>La nouvelle couleur (souvent dans <code>event.data</code>), Plages affectées (<code>event.getTargetRanges()</code>)</td>
+                            <td class="cancellable-yes">Oui</td>
+                        </tr>
+                         <tr>
+                            <td><code>formatFontHighlight</code></td>
+                            <td>Changer la couleur de surlignement.</td>
+                            <td>La nouvelle couleur (souvent dans <code>event.data</code>), Plages affectées (<code>event.getTargetRanges()</code>)</td>
+                            <td class="cancellable-yes">Oui</td>
+                        </tr>
+                         <tr>
+                            <td><code>formatFontSize</code></td>
+                            <td>Changer la taille de la police.</td>
+                            <td>La nouvelle taille (souvent dans <code>event.data</code>), Plages affectées (<code>event.getTargetRanges()</code>)</td>
+                            <td class="cancellable-yes">Oui</td>
+                        </tr>
+                         <tr>
+                            <td><code>formatJustifyLeft</code></td>
+                            <td>Aligner le texte à gauche.</td>
+                            <td>Plages affectées (<code>event.getTargetRanges()</code>)</td>
+                            <td class="cancellable-yes">Oui</td>
+                        </tr>
+                         <tr>
+                            <td><code>formatJustifyRight</code></td>
+                            <td>Aligner le texte à droite.</td>
+                            <td>Plages affectées (<code>event.getTargetRanges()</code>)</td>
+                            <td class="cancellable-yes">Oui</td>
+                        </tr>
+                         <tr>
+                            <td><code>formatJustifyCenter</code></td>
+                            <td>Centrer le texte.</td>
+                            <td>Plages affectées (<code>event.getTargetRanges()</code>)</td>
+                            <td class="cancellable-yes">Oui</td>
+                        </tr>
+                         <tr>
+                            <td><code>formatJustifyFull</code></td>
+                            <td>Justifier le texte.</td>
+                            <td>Plages affectées (<code>event.getTargetRanges()</code>)</td>
+                            <td class="cancellable-yes">Oui</td>
+                        </tr>
+                         <tr>
+                            <td><code>formatIndent</code></td>
+                            <td>Augmenter l'indentation.</td>
+                            <td>Plages affectées (<code>event.getTargetRanges()</code>)</td>
+                            <td class="cancellable-yes">Oui</td>
+                        </tr>
+                         <tr>
+                            <td><code>formatOutdent</code></td>
+                            <td>Diminuer l'indentation.</td>
+                            <td>Plages affectées (<code>event.getTargetRanges()</code>)</td>
+                            <td class="cancellable-yes">Oui</td>
+                        </tr>
+                         <tr>
+                            <td><code>formatRemove</code></td>
+                            <td>Supprimer la mise en forme.</td>
+                            <td>Plages affectées (<code>event.getTargetRanges()</code>)</td>
+                            <td class="cancellable-yes">Oui</td>
+                        </tr>
+                         <tr>
+                            <td><code>formatSetBlockTextDirection</code></td>
+                            <td>Définir la direction du texte pour un bloc (ex: RTL/LTR).</td>
+                            <td>La direction (souvent dans <code>event.data</code>), Plages affectées (<code>event.getTargetRanges()</code>)</td>
+                            <td class="cancellable-yes">Oui</td>
+                        </tr>
+                         <tr>
+                            <td><code>formatSetInlineTextDirection</code></td>
+                            <td>Définir la direction du texte pour une portion (inline).</td>
+                            <td>La direction (souvent dans <code>event.data</code>), Plages affectées (<code>event.getTargetRanges()</code>)</td>
+                            <td class="cancellable-yes">Oui</td>
+                        </tr>
+                         <tr>
+                            <td><code>formatSetLocale</code></td>
+                            <td>Définir la langue/locale pour le texte.</td>
+                            <td>La locale (souvent dans <code>event.data</code>), Plages affectées (<code>event.getTargetRanges()</code>)</td>
+                            <td class="cancellable-yes">Oui</td>
+                        </tr>
+            
+            
+                        <tr>
+                            <td><code>historyUndo</code></td>
+                            <td>Action d'Annuler (Undo).</td>
+                            <td>Plages affectées (<code>event.getTargetRanges()</code>)</td>
+                            <td class="cancellable-yes">Oui</td>
+                        </tr>
+                         <tr>
+                            <td><code>historyRedo</code></td>
+                            <td>Action de Rétablir (Redo).</td>
+                            <td>Plages affectées (<code>event.getTargetRanges()</code>)</td>
+                            <td class="cancellable-yes">Oui</td>
+                        </tr>
+            
+                        <tr>
+                            <td><code>insertLineBreak</code></td>
+                            <td>Insertion d'un saut de ligne (identique à l'action de mise en forme, mais listé aussi ici pour clarté).</td>
+                            <td>Plages affectées (<code>event.getTargetRanges()</code>)</td>
+                            <td class="cancellable-yes">Oui</td>
+                        </tr>
+                        <tr>
+                            <td><code>insertParagraph</code></td>
+                            <td>Insertion d'un paragraphe (identique à l'action de mise en forme, mais listé aussi ici pour clarté).</td>
+                            <td>Plages affectées (<code>event.getTargetRanges()</code>)</td>
+                            <td class="cancellable-yes">Oui</td>
+                        </tr>
+            
+                    </tbody>
+                </table>
+            </details>
+        </li>
+        <li>data : Une chaîne de caractères (DOMString) contenant les caractères que l'utilisateur tente d'insérer. Cette propriété n'est pertinente que pour certains inputType (principalement ceux commençant par "insert..." comme "insertText"). Pour les actions comme la suppression, la mise en forme ou le collage, cette propriété peut être une chaîne vide ou null.</li>
+        <li>dataTransfer : Un objet DataTransfer qui contient les données associées aux opérations de collage (inputType "insertFromPaste") ou de glisser-déposer (inputType "insertFromDrop"). Il est null pour les autres types d'entrée. Cet objet permet d'accéder au contenu (texte brut, HTML, fichiers) qui est sur le point d'être inséré, avant son insertion effective dans le DOM.</li>
+        <li>isComposing : Une valeur booléenne (Boolean) indiquant si l'événement se produit pendant une session de composition IME (Input Method Editor). C'est true si l'événement est déclenché après un événement compositionstart et avant un compositionend. C'est particulièrement utile pour gérer les interactions avec les méthodes de saisie complexes utilisées pour certaines langes.</li>
+    </ul>
+</div>
+<script  src="editor.js"></script> 
+</body>
+</html>
