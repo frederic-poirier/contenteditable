@@ -57,7 +57,7 @@ p, h1, h2, h3, h4, h5, h6 {overflow-wrap: break-word;}
     :root { font-family: InterVariable, sans-serif; }
   }
 
-  #editor {
+  #editor, main {
     color: var(--clr-text);
     outline: none;
     width: min(60ch, calc(100vw - 2rem));
@@ -108,6 +108,8 @@ li.placeholder::after {content: 'List items';}
   display: none;
 }
 
+a, a:visited {color: var(--clr-text); text-decoration: none; background-color: var(--clr-card-bg); padding: 0.25em; border-radius: 0.25em;}
+a::after {content: ' ↗'; color: var(--clr-subtle);}
 
 pre {
   background-color: var(--clr-card-bg);
@@ -122,100 +124,9 @@ hr {
   margin-block: 1em;
 }
 
-[data-type='checkbox'] {
-  list-style: none;
-  padding-left: 1.5em;
-
-  li {
-    position: relative;
-  }
-
-  input {
-    position: absolute;
-    left: -1.25em;
-    top: 50%;
-    transform: translateY(-50%);
-  }
-}
-
-#menu {
-  background-color: var(--clr-card-bg);
-  color: var(--clr-text);
-  border-radius: 0.5em;
-  border: 1px solid var(--clr-border);
-  position-anchor: --menu-item;
-  position: absolute;
-  left: anchor(left);
-  top: anchor(bottom);
-  transform: translateY(0.5em);
-  width: 250px;
-
-  scrollbar-color: var(--clr-border) var(--clr-card-bg);
-
-
-  ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    max-height: 200px;
-    overflow-y: auto;
-  }
-
-  button {
-    font-family: monospace;
-    background-color: var(--clr-card-bg);
-    color: var(--clr-text);
-    border: none;
-    padding: 0.5em 0.25em;
-    border-radius: 0.25em;
-    cursor: pointer;
-    width: 100%;
-    text-align: left;
-
-    &:hover {
-      background-color: var(--clr-border);
-    }
-  }	
-}
-
-span.menu-search {
-  anchor-name: --menu-item;
-  display: inline-block;
-  padding: 0.15em 0.5em;
-  border-radius: 0.25em;
-  cursor: pointer;
-  background-color: var(--clr-card-bg);
-  color: var(--clr-text);
-  transition: background-color 0.2s ease-in-out;
-}
-
-.list {
-  display: flex;
-  list-style: none;
-  padding: 0;
-  gap: 1em;
-  overflow-x: scroll;
-  scroll-snap-align: start;
-  scroll-snap-type: x mandatory;
-
-  li {
-    scrollbar-width: none;
-    margin-block: 1em;
-    padding: 0.5em;
-    min-width: 300px;
-    min-height: 150px;
-    overflow-y: scroll;
-    background-color: var(--clr-card-bg);
-    border-radius: 0.25em;
-  }
-}
-
-
 code {
   font-family: monospace;
-  font-size: var(--font-size);
   font-weight: 500;
-  border: 1px solid var(--clr-border);
   color: var(--clr-subtle);
   background-color: var(--clr-card-bg);
   border-radius: 0.5em;
@@ -236,22 +147,64 @@ li, p {
   text-wrap: balance;
 }
 
-table {
-  border-collapse: collapse;
-  width: 100%;
-  margin-top: 20px;
-}
-th, td {
-  place-content: center;
-  border: 1px solid var(--clr-border);
-  text-align: left;
-  padding: 8px;
-}
-th {
-  background-color: var(--clr-card-bg);
+mark {
+  background-color: var(--clr-primary);
+  color: var(--clr-text);
+  box-shadow: 0 0 0.25em var(--clr-primary);
+  border-radius: 0.25em;
 }
 
-.cancellable-yes {
-  font-weight: bold;
+#caretForm {
+  padding: 0.25em;
+  border-radius: 0.5em;
+  font-family: monospace;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  *:not(input) {
+    user-select: none;  
+  }
+
+  :disabled {cursor: not-allowed; &::placeholder {color: var(--clr-border) !important;}}
+
+  span {
+    background: none;
+    border: none;
+  }
+
+  button {
+    background: none;
+    border: none;
+    transform: scale(0.6);
+    cursor: pointer;
+    padding: 0;
+  }
+
+  span:nth-child(1) { color: #8cdcfe;}
+  span:nth-child(3), span:last-of-type { color: #f1db0f;}
+
+  #method {color: #edf8a7;}
+  #node {color: #379dd4;}
+  #offset {color: #b5cea8;}
+  
+  input {
+    color: var(--clr-text);
+    border: none;
+    outline: none;
+    width: fit-content;
+    border-radius: 0.25em;
+    font-family: monospace;
+  }
 }
 
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+
+input::-webkit-calendar-picker-indicator {
+  display: none !important;
+}

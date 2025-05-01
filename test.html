@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Live MD</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Live Markdown Editor">
+  <link rel="preconnect" href="https://rsms.me/">
+  <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+    <div id="editor" contenteditable="true" spellcheck="false"><h1>Range API</h1><p>A range can be created by using the <code>Document.createRange()</code> method. Range objects can also be retrieved by using the <code>getRangeAt()</code> method of the Selection object or the <code>caretRangeFromPoint()</code> method of the Document object.</p></div>
+    <div id="caretManager">
+        <form id="caretForm" spellcheck="false">
+            <span>range</span>.<input type="text" name="method" id="method" value="setStart" placeholder="method" list="method-list"><span>(</span><input type="text" id="node" value="" placeholder="node" list="nodeText-list"><span>, <input type="number" name="offset" id="offset" placeholder="0" min="0" max="100"></span><span>)</span>
+            <button onclick="refresh()"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368"><path d="M480-160q-134 0-227-93t-93-227q0-134 93-227t227-93q69 0 132 28.5T720-690v-70q0-17 11.5-28.5T760-800q17 0 28.5 11.5T800-760v200q0 17-11.5 28.5T760-520H560q-17 0-28.5-11.5T520-560q0-17 11.5-28.5T560-600h128q-32-56-87.5-88T480-720q-100 0-170 70t-70 170q0 100 70 170t170 70q68 0 124.5-34.5T692-367q8-14 22.5-19.5t29.5-.5q16 5 23 21t-1 30q-41 80-117 128t-169 48Z"/></svg></button>
+
+        </form>
+    </div>
+
+    <datalist id="method-list">
+        <option value="setStart"></option>
+        <option value="setStartBefore"></option>
+        <option value="setStartAfter"></option>
+    </datalist>
+
+    <datalist id="node-list"></datalist>
+    <datalist id="nodeText-list"></datalist>
+</main>
+<script src="script.js"></script> 
+</body>
+</html>
+
